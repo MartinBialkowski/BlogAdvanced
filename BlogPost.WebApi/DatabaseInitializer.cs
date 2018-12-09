@@ -41,20 +41,17 @@ namespace BlogPost.WebApi
             {
                 context.Students.Add(new Student
                 {
-                    Name = "Martin B",
-                    CourseId = 1
+                    Name = "Martin B"
                 });
 
                 context.Students.Add(new Student
                 {
-                    Name = "Witalian",
-                    CourseId = 2
+                    Name = "Witalian"
                 });
 
                 context.Students.Add(new Student
                 {
-                    Name = "SomeRandomStudent",
-                    CourseId = 1
+                    Name = "SomeRandomStudent"
                 });
 
                 context.SaveChanges();
