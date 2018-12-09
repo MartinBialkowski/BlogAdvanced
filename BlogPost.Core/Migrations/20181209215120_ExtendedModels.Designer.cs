@@ -3,14 +3,16 @@ using BlogPost.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlogPost.Core.Migrations
 {
     [DbContext(typeof(BlogPostContext))]
-    partial class BlogPostContextModelSnapshot : ModelSnapshot
+    [Migration("20181209215120_ExtendedModels")]
+    partial class ExtendedModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
