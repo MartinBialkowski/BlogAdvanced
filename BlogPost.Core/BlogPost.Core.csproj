@@ -13,4 +13,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Migrations\20181210205557_SeedData.Designer.cs">
+      <DependentUpon>20181210205557_SeedData.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
