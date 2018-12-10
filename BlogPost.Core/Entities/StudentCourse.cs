@@ -1,6 +1,4 @@
-﻿using BlogPost.Core.Entities;
-
-namespace BlogPost.Core
+﻿namespace BlogPost.Core.Entities
 {
     public class StudentCourse
     {
