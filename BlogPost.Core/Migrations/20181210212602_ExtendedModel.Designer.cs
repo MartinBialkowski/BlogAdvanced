@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogPost.Core.Migrations
 {
     [DbContext(typeof(BlogPostContext))]
-    [Migration("20181209215120_ExtendedModels")]
-    partial class ExtendedModels
+    [Migration("20181210212602_ExtendedModel")]
+    partial class ExtendedModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,7 +34,7 @@ namespace BlogPost.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assessment");
+                    b.ToTable("Assessments");
                 });
 
             modelBuilder.Entity("BlogPost.Core.Entities.Course", b =>
@@ -67,7 +67,7 @@ namespace BlogPost.Core.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("BlogPost.Core.StudentCourse", b =>
+            modelBuilder.Entity("BlogPost.Core.Entities.StudentCourse", b =>
                 {
                     b.Property<int>("CourseId");
 
@@ -77,16 +77,16 @@ namespace BlogPost.Core.Migrations
 
                     b.Property<float>("Mark");
 
-                    b.HasKey("CourseId", "StudentId");
+                    b.HasKey("CourseId", "StudentId", "AssessmentId");
 
                     b.HasIndex("AssessmentId");
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentCourse");
+                    b.ToTable("StudentCourses");
                 });
 
-            modelBuilder.Entity("BlogPost.Core.StudentCourse", b =>
+            modelBuilder.Entity("BlogPost.Core.Entities.StudentCourse", b =>
                 {
                     b.HasOne("BlogPost.Core.Entities.Assessment", "Assessment")
                         .WithMany("StudentCourses")

@@ -7,36 +7,36 @@ namespace BlogPost.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: "Assessment",
+                table: "Assessments",
                 columns: new[] { "Id", "Weight", "WeightType" },
                 values: new object[,]
                 {
                     { 1, 0.2f, "Homework" },
                     { 2, 0.3f, "Quiz test" },
                     { 3, 0.6f, "Work at school" },
-                    { 4, 1f, "Exam " }
+                    { 4, 1f, "Exam" }
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DeleteData(
-                table: "Assessment",
+                table: "Assessments",
                 keyColumn: "Id",
                 keyValue: 1);
 
             migrationBuilder.DeleteData(
-                table: "Assessment",
+                table: "Assessments",
                 keyColumn: "Id",
                 keyValue: 2);
 
             migrationBuilder.DeleteData(
-                table: "Assessment",
+                table: "Assessments",
                 keyColumn: "Id",
                 keyValue: 3);
 
             migrationBuilder.DeleteData(
-                table: "Assessment",
+                table: "Assessments",
                 keyColumn: "Id",
                 keyValue: 4);
         }

@@ -32,13 +32,13 @@ namespace BlogPost.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assessment");
+                    b.ToTable("Assessments");
 
                     b.HasData(
                         new { Id = 1, Weight = 0.2f, WeightType = "Homework" },
                         new { Id = 2, Weight = 0.3f, WeightType = "Quiz test" },
                         new { Id = 3, Weight = 0.6f, WeightType = "Work at school" },
-                        new { Id = 4, Weight = 1f, WeightType = "Exam " }
+                        new { Id = 4, Weight = 1f, WeightType = "Exam" }
                     );
                 });
 
@@ -72,7 +72,7 @@ namespace BlogPost.Core.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("BlogPost.Core.StudentCourse", b =>
+            modelBuilder.Entity("BlogPost.Core.Entities.StudentCourse", b =>
                 {
                     b.Property<int>("CourseId");
 
@@ -82,16 +82,16 @@ namespace BlogPost.Core.Migrations
 
                     b.Property<float>("Mark");
 
-                    b.HasKey("CourseId", "StudentId");
+                    b.HasKey("CourseId", "StudentId", "AssessmentId");
 
                     b.HasIndex("AssessmentId");
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentCourse");
+                    b.ToTable("StudentCourses");
                 });
 
-            modelBuilder.Entity("BlogPost.Core.StudentCourse", b =>
+            modelBuilder.Entity("BlogPost.Core.Entities.StudentCourse", b =>
                 {
                     b.HasOne("BlogPost.Core.Entities.Assessment", "Assessment")
                         .WithMany("StudentCourses")
