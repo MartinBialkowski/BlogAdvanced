@@ -3,14 +3,16 @@ using BlogPost.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlogPost.Core.Migrations
 {
     [DbContext(typeof(BlogPostContext))]
-    partial class BlogPostContextModelSnapshot : ModelSnapshot
+    [Migration("20181210212602_ExtendedModel")]
+    partial class ExtendedModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,13 +35,6 @@ namespace BlogPost.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Assessments");
-
-                    b.HasData(
-                        new { Id = 1, Weight = 0.2f, WeightType = "Homework" },
-                        new { Id = 2, Weight = 0.3f, WeightType = "Quiz test" },
-                        new { Id = 3, Weight = 0.6f, WeightType = "Work at school" },
-                        new { Id = 4, Weight = 1f, WeightType = "Exam" }
-                    );
                 });
 
             modelBuilder.Entity("BlogPost.Core.Entities.Course", b =>

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BlogPost.Core.Migrations
 {
-    public partial class ExtendedModels : Migration
+    public partial class ExtendedModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,7 +20,7 @@ namespace BlogPost.Core.Migrations
                 table: "Students");
 
             migrationBuilder.CreateTable(
-                name: "Assessment",
+                name: "Assessments",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -30,11 +30,11 @@ namespace BlogPost.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Assessment", x => x.Id);
+                    table.PrimaryKey("PK_Assessments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentCourse",
+                name: "StudentCourses",
                 columns: table => new
                 {
                     CourseId = table.Column<int>(nullable: false),
@@ -44,21 +44,21 @@ namespace BlogPost.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StudentCourse", x => new { x.CourseId, x.StudentId });
+                    table.PrimaryKey("PK_StudentCourses", x => new { x.CourseId, x.StudentId, x.AssessmentId });
                     table.ForeignKey(
-                        name: "FK_StudentCourse_Assessment_AssessmentId",
+                        name: "FK_StudentCourses_Assessments_AssessmentId",
                         column: x => x.AssessmentId,
-                        principalTable: "Assessment",
+                        principalTable: "Assessments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StudentCourse_Courses_CourseId",
+                        name: "FK_StudentCourses_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StudentCourse_Students_StudentId",
+                        name: "FK_StudentCourses_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "Id",
@@ -66,23 +66,23 @@ namespace BlogPost.Core.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentCourse_AssessmentId",
-                table: "StudentCourse",
+                name: "IX_StudentCourses_AssessmentId",
+                table: "StudentCourses",
                 column: "AssessmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentCourse_StudentId",
-                table: "StudentCourse",
+                name: "IX_StudentCourses_StudentId",
+                table: "StudentCourses",
                 column: "StudentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StudentCourse");
+                name: "StudentCourses");
 
             migrationBuilder.DropTable(
-                name: "Assessment");
+                name: "Assessments");
 
             migrationBuilder.AddColumn<int>(
                 name: "CourseId",
