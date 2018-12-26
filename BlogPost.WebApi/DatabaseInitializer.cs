@@ -22,40 +22,30 @@ namespace BlogPost.WebApi
 
         private static void InitilizeDatabase()
         {
-            if (!context.Courses.Any())
+            if (!context.Courses.Any() && !context.Students.Any())
             {
-                context.Courses.Add(new Course
+                var students = new[]
                 {
-                    Name = "Random"
-                });
+                    new Student { Name = "Martin B" },
+                    new Student { Name = "Witalian" },
+                    new Student { Name =" SomeRandom" }
+                };
 
-                context.Courses.Add(new Course
+                var courses = new[]
                 {
-                    Name = "New Course"
-                });
+                    new Course { Name = "Informatic" },
+                    new Course { Name = "Language" },
+                    new Course { Name = "Math" }
+                };
 
-                context.SaveChanges();
-            }
-
-            if (!context.Students.Any())
-            {
-                context.Students.Add(new Student
-                {
-                    Name = "Martin B",
-                    CourseId = 1
-                });
-
-                context.Students.Add(new Student
-                {
-                    Name = "Witalian",
-                    CourseId = 2
-                });
-
-                context.Students.Add(new Student
-                {
-                    Name = "SomeRandomStudent",
-                    CourseId = 1
-                });
+                context.StudentCourses.AddRange(
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 1 },
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 4 },
+                    new StudentCourse { Student = students[0], Course = courses[1], AssessmentId = 1 },
+                    new StudentCourse { Student = students[1], Course = courses[1], AssessmentId = 2 },
+                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 3 },
+                    new StudentCourse { Student = students[2], Course = courses[2], AssessmentId = 2 }
+                    );
 
                 context.SaveChanges();
             }
