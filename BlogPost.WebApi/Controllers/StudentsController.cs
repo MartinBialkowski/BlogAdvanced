@@ -20,6 +20,7 @@ namespace BlogPost.WebApi.Controllers
 
         // GET: api/Students
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
         public ActionResult<IEnumerable<Student>> GetStudents()
         {
             return context.Students;
@@ -27,6 +28,9 @@ namespace BlogPost.WebApi.Controllers
 
         // GET: api/Students/5
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Student), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<ActionResult<Student>> GetStudent([FromRoute] int id)
         {
             var student = await context.Students.FindAsync(id);
@@ -41,6 +45,9 @@ namespace BlogPost.WebApi.Controllers
 
         // PUT: api/Students/5
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(void), 204)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] Student student)
         {
             if (id != student.Id)
@@ -71,6 +78,8 @@ namespace BlogPost.WebApi.Controllers
 
         // POST: api/Students
         [HttpPost]
+        [ProducesResponseType(typeof(Student), 201)]
+        [ProducesResponseType(typeof(string), 400)]
         public async Task<ActionResult<Student>> PostStudent([FromBody] Student student)
         {
             context.Students.Add(student);
@@ -81,6 +90,9 @@ namespace BlogPost.WebApi.Controllers
 
         // DELETE: api/Students/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(void), 204)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> DeleteStudent([FromRoute] int id)
         {
             var student = await context.Students.FindAsync(id);
