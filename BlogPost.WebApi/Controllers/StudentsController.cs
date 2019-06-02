@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlogPost.Core.Entities;
+using AutoMapper;
+using BlogPost.WebApi.Types.Student;
 
 namespace BlogPost.WebApi.Controllers
 {
@@ -12,18 +14,26 @@ namespace BlogPost.WebApi.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly BlogPostContext context;
+        private readonly IMapper mapper;
 
-        public StudentsController(BlogPostContext context)
+        public StudentsController(BlogPostContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         // GET: api/Students
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
-        public ActionResult<IEnumerable<Student>> GetStudents()
+        public ActionResult<IEnumerable<StudentResponse>> GetStudents()
         {
-            return context.Students;
+            var students = context.Students
+                .Include(x => x.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .ToList();
+            var response = mapper.Map<IEnumerable<Student>, IEnumerable<StudentResponse>>(students);
+
+            return Ok(response);
         }
 
         // GET: api/Students/5
@@ -31,9 +41,12 @@ namespace BlogPost.WebApi.Controllers
         [ProducesResponseType(typeof(Student), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public async Task<ActionResult<Student>> GetStudent([FromRoute] int id)
+        public async Task<ActionResult<StudentResponse>> GetStudent([FromRoute] int id)
         {
-            var student = await context.Students.FindAsync(id);
+            var student = await context.Students
+                .Include(x => x.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .SingleOrDefaultAsync(x => x.Id == id);
 
             if (student == null)
             {
