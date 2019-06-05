@@ -61,12 +61,14 @@ namespace BlogPost.WebApi.Controllers
         [ProducesResponseType(typeof(void), 204)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] Student student)
+        public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
-            if (id != student.Id)
+            if (id != request.Id)
             {
                 return BadRequest();
             }
+
+            var student = mapper.Map<Student>(request);
 
             context.Entry(student).State = EntityState.Modified;
 
@@ -93,12 +95,13 @@ namespace BlogPost.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Student), 201)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<ActionResult<Student>> PostStudent([FromBody] Student student)
+        public async Task<ActionResult<Student>> PostStudent([FromBody] CreateStudentRequest request)
         {
+            var student = mapper.Map<Student>(request);
             context.Students.Add(student);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+            return CreatedAtAction("GetStudent", new { id = student.Id }, request);
         }
 
         // DELETE: api/Students/5
