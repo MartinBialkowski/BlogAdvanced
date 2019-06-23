@@ -1,4 +1,9 @@
-﻿using BlogPost.Core.Entities;
+﻿using Autofac;
+using BlogPost.Core.Entities;
+using BlogPost.WebApi.Types;
+using BlogPost.WebApi.Types.Student;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +12,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using AutoMapper;
+using System.Reflection;
 
 namespace BlogPost.WebApi
 {
@@ -39,7 +46,18 @@ namespace BlogPost.WebApi
                 });
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAutoMapper(typeof(StudentMapping).GetTypeInfo().Assembly);
+
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterType<CreateStudentValidator>().As<IValidator<CreateStudentRequest>>();
+            builder.RegisterType<UpdateStudentValidator>().As<IValidator<UpdateStudentRequest>>();
+            builder.RegisterType<ValidatorFactory>().As<IValidatorFactory>().SingleInstance();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
