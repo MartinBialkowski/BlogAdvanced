@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlogPost.Core.Entities;
+using AutoMapper;
+using BlogPost.WebApi.Types.Student;
 
 namespace BlogPost.WebApi.Controllers
 {
@@ -12,18 +14,26 @@ namespace BlogPost.WebApi.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly BlogPostContext context;
+        private readonly IMapper mapper;
 
-        public StudentsController(BlogPostContext context)
+        public StudentsController(BlogPostContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         // GET: api/Students
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
-        public ActionResult<IEnumerable<Student>> GetStudents()
+        public ActionResult<IEnumerable<StudentResponse>> GetStudents()
         {
-            return context.Students;
+            var students = context.Students
+                .Include(x => x.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .ToList();
+            var response = mapper.Map<IEnumerable<Student>, IEnumerable<StudentResponse>>(students);
+
+            return Ok(response);
         }
 
         // GET: api/Students/5
@@ -31,9 +41,12 @@ namespace BlogPost.WebApi.Controllers
         [ProducesResponseType(typeof(Student), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public async Task<ActionResult<Student>> GetStudent([FromRoute] int id)
+        public async Task<ActionResult<StudentResponse>> GetStudent([FromRoute] int id)
         {
-            var student = await context.Students.FindAsync(id);
+            var student = await context.Students
+                .Include(x => x.StudentCourses)
+                .ThenInclude(sc => sc.Course)
+                .SingleOrDefaultAsync(x => x.Id == id);
 
             if (student == null)
             {
@@ -48,12 +61,14 @@ namespace BlogPost.WebApi.Controllers
         [ProducesResponseType(typeof(void), 204)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] Student student)
+        public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
-            if (id != student.Id)
+            if (id != request.Id)
             {
                 return BadRequest();
             }
+
+            var student = mapper.Map<Student>(request);
 
             context.Entry(student).State = EntityState.Modified;
 
@@ -80,12 +95,13 @@ namespace BlogPost.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Student), 201)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<ActionResult<Student>> PostStudent([FromBody] Student student)
+        public async Task<ActionResult<Student>> PostStudent([FromBody] CreateStudentRequest request)
         {
+            var student = mapper.Map<Student>(request);
             context.Students.Add(student);
             await context.SaveChangesAsync();
 
-            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+            return CreatedAtAction("GetStudent", new { id = student.Id }, request);
         }
 
         // DELETE: api/Students/5
