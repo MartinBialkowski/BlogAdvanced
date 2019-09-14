@@ -6,9 +6,9 @@ namespace BlogPost.WebApi.Types.Student
     {
         public StudentMapping()
         {
-            CreateMap<Core.Entities.Student, StudentResponse>();
-            CreateMap<UpdateStudentRequest, Core.Entities.Student>();
-            CreateMap<CreateStudentRequest, Core.Entities.Student>();
+            CreateMap<Core.Entities.Student, StudentResponse>(MemberList.Source);
+            CreateMap<UpdateStudentRequest, Core.Entities.Student>(MemberList.Source);
+            CreateMap<CreateStudentRequest, Core.Entities.Student>(MemberList.Source);
         }
     }
 }

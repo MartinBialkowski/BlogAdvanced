@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using BlogPost.Core.Entities;
 using AutoMapper;
 using BlogPost.WebApi.Types.Student;
+using BlogPost.WebApi.Types.Course;
 
 namespace BlogPost.WebApi.Controllers
 {
@@ -25,13 +26,13 @@ namespace BlogPost.WebApi.Controllers
         // GET: api/Students
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
-        public ActionResult<IEnumerable<StudentResponse>> GetStudents()
+        public async Task<ActionResult<IEnumerable<StudentResponse>>> GetStudents()
         {
-            var students = context.Students
-                .Include(x => x.StudentCourses)
+            var students = await context.Students
+                .Include(x => x.Courses)
                 .ThenInclude(sc => sc.Course)
-                .ToList();
-            var response = mapper.Map<IEnumerable<Student>, IEnumerable<StudentResponse>>(students);
+                .ToListAsync();
+            var response = mapper.Map<IEnumerable<StudentResponse>>(students);
 
             return Ok(response);
         }
@@ -44,7 +45,7 @@ namespace BlogPost.WebApi.Controllers
         public async Task<ActionResult<StudentResponse>> GetStudent([FromRoute] int id)
         {
             var student = await context.Students
-                .Include(x => x.StudentCourses)
+                .Include(x => x.Courses)
                 .ThenInclude(sc => sc.Course)
                 .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -53,7 +54,9 @@ namespace BlogPost.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(student);
+            var response = mapper.Map<StudentResponse>(student);
+
+            return Ok(response);
         }
 
         // PUT: api/Students/5
@@ -95,13 +98,14 @@ namespace BlogPost.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Student), 201)]
         [ProducesResponseType(typeof(string), 400)]
-        public async Task<ActionResult<Student>> PostStudent([FromBody] CreateStudentRequest request)
+        public async Task<ActionResult<StudentResponse>> PostStudent([FromBody] CreateStudentRequest request)
         {
             var student = mapper.Map<Student>(request);
             context.Students.Add(student);
             await context.SaveChangesAsync();
+            var studentResponse = mapper.Map<StudentResponse>(student);
 
-            return CreatedAtAction("GetStudent", new { id = student.Id }, request);
+            return CreatedAtAction("GetStudent", new { id = studentResponse.Id }, studentResponse);
         }
 
         // DELETE: api/Students/5

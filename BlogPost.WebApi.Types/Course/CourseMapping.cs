@@ -6,7 +6,8 @@ namespace BlogPost.WebApi.Types.Course
     {
         public CourseMapping()
         {
-            CreateMap<Core.Entities.StudentCourse, CourseResponse>()
+            CreateMap<Core.Entities.StudentCourse, CourseResponse>(MemberList.Destination)
+                .ForMember(dest => dest.Id, m => m.MapFrom(src => src.CourseId))
                 .ForMember(dest => dest.Name, m => m.MapFrom(src => src.Course.Name));
         }
     }
