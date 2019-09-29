@@ -5,7 +5,7 @@ using Xunit;
 
 namespace BlogPost.WebApi.Types.Student.Tests
 {
-    public class StudentMappingTests: IDisposable
+    public class StudentMappingTests
     {
         private readonly IMapper mapper;
         public StudentMappingTests()
@@ -17,11 +17,6 @@ namespace BlogPost.WebApi.Types.Student.Tests
             });
 
             mapper = config.CreateMapper();
-        }
-
-        public void Dispose()
-        {
-            Mapper.Reset();
         }
 
         [Fact]
