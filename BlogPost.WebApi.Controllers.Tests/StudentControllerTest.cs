@@ -1,8 +1,10 @@
 using BlogPost.Core.Entities;
+using BlogPost.Core.Interfaces;
 using BlogPost.WebApi.Types.Student;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,10 +14,14 @@ namespace BlogPost.WebApi.Controllers.Tests
     public class StudentControllerTest: IClassFixture<ControllerFixture>
     {
         private readonly ControllerFixture fixture;
+        private readonly Mock<IStudentService> studentServiceMock;
+        private readonly Mock<IStudentRepository> studentRepositoryMock;
 
         public StudentControllerTest(ControllerFixture fixture)
         {
             this.fixture = fixture;
+            studentServiceMock = new Mock<IStudentService>();
+            studentRepositoryMock = new Mock<IStudentRepository>();
         }
 
         [Fact]
@@ -29,7 +35,7 @@ namespace BlogPost.WebApi.Controllers.Tests
             // act
             using (var dbContext = new BlogPostContext(fixture.Options))
             {
-                var controller = new StudentsController(dbContext, fixture.Mapper);
+                var controller = new StudentsController(dbContext, fixture.Mapper, studentServiceMock.Object, studentRepositoryMock.Object);
                 result = await controller.GetStudent(ControllerFixture.StudentId);
             }
 
@@ -52,7 +58,7 @@ namespace BlogPost.WebApi.Controllers.Tests
             // act
             using (var dbContext = new BlogPostContext(fixture.Options))
             {
-                var controller = new StudentsController(dbContext, fixture.Mapper);
+                var controller = new StudentsController(dbContext, fixture.Mapper, studentServiceMock.Object, studentRepositoryMock.Object);
                 result = await controller.PostStudent(studentRequest);
                 studentResult = dbContext.Students.FirstOrDefault(x => x.Name == fixture.NewStudent.Name);
             }
@@ -76,7 +82,7 @@ namespace BlogPost.WebApi.Controllers.Tests
             // act
             using (var dbContext = new BlogPostContext(fixture.Options))
             {
-                var controller = new StudentsController(dbContext, fixture.Mapper);
+                var controller = new StudentsController(dbContext, fixture.Mapper, studentServiceMock.Object, studentRepositoryMock.Object);
                 result = await controller.PutStudent(ControllerFixture.StudentId, studentRequest);
                 studentResult = dbContext.Students.First(x => x.Id == ControllerFixture.StudentId);
             }
@@ -98,7 +104,7 @@ namespace BlogPost.WebApi.Controllers.Tests
             // act
             using (var dbContext = new BlogPostContext(fixture.Options))
             {
-                var controller = new StudentsController(dbContext, fixture.Mapper);
+                var controller = new StudentsController(dbContext, fixture.Mapper, studentServiceMock.Object, studentRepositoryMock.Object);
                 result = await controller.DeleteStudent(studentId);
                 studentResult = dbContext.Students.FirstOrDefault(x => x.Id == studentId);
             }

@@ -8,16 +8,14 @@ namespace BlogPost.WebApi
 {
     public class DatabaseInitializer
     {
-        private static BlogPostContext context;
+        private static BlogPostContext context = null!;
 
         public static void Initialize(IApplicationBuilder app)
         {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                context = serviceScope.ServiceProvider.GetRequiredService<BlogPostContext>();
-                context.Database.Migrate();
-                InitilizeDatabase();
-            }
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            context = serviceScope.ServiceProvider.GetRequiredService<BlogPostContext>();
+            context.Database.Migrate();
+            InitilizeDatabase();
         }
 
         private static void InitilizeDatabase()
@@ -39,12 +37,19 @@ namespace BlogPost.WebApi
                 };
 
                 context.StudentCourses.AddRange(
-                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 1 },
-                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 4 },
-                    new StudentCourse { Student = students[0], Course = courses[1], AssessmentId = 1 },
-                    new StudentCourse { Student = students[1], Course = courses[1], AssessmentId = 2 },
-                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 3 },
-                    new StudentCourse { Student = students[2], Course = courses[2], AssessmentId = 2 }
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 1, Mark = 4 },
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 2, Mark = 2 },
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 3, Mark = 5 },
+                    new StudentCourse { Student = students[0], Course = courses[0], AssessmentId = 4, Mark = 4 },
+                    new StudentCourse { Student = students[0], Course = courses[1], AssessmentId = 4, Mark = 1 },
+                    new StudentCourse { Student = students[0], Course = courses[1], AssessmentId = 1, Mark = 5 },
+                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 1, Mark = 3 },
+                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 2, Mark = 3 },
+                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 3, Mark = 5 },
+                    new StudentCourse { Student = students[1], Course = courses[0], AssessmentId = 4, Mark = 4 },
+                    new StudentCourse { Student = students[1], Course = courses[1], AssessmentId = 2, Mark = 1 },
+                    new StudentCourse { Student = students[1], Course = courses[1], AssessmentId = 3, Mark = 4 },
+                    new StudentCourse { Student = students[2], Course = courses[2], AssessmentId = 2, Mark = 5 }
                     );
 
                 context.SaveChanges();

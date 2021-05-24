@@ -7,6 +7,9 @@ using BlogPost.Core.Entities;
 using AutoMapper;
 using BlogPost.WebApi.Types.Student;
 using BlogPost.WebApi.Types.Course;
+using BlogPost.Core.Interfaces;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogPost.WebApi.Controllers
 {
@@ -16,16 +19,20 @@ namespace BlogPost.WebApi.Controllers
     {
         private readonly BlogPostContext context;
         private readonly IMapper mapper;
+        private readonly IStudentService studentService;
+        private readonly IStudentRepository studentRepository;
 
-        public StudentsController(BlogPostContext context, IMapper mapper)
+        public StudentsController(BlogPostContext context, IMapper mapper, IStudentService studentService, IStudentRepository studentRepository)
         {
             this.context = context;
             this.mapper = mapper;
+            this.studentService = studentService;
+            this.studentRepository = studentRepository;
         }
 
         // GET: api/Students
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<Student>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<StudentResponse>>> GetStudents()
         {
             var students = await context.Students
@@ -39,11 +46,13 @@ namespace BlogPost.WebApi.Controllers
 
         // GET: api/Students/5
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Student), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<StudentResponse>> GetStudent([FromRoute] int id)
         {
+            await studentService.GetMissingCoursesForStudentsAsync();
+
             var student = await context.Students
                 .Include(x => x.Courses)
                 .ThenInclude(sc => sc.Course)
@@ -61,9 +70,9 @@ namespace BlogPost.WebApi.Controllers
 
         // PUT: api/Students/5
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(void), 204)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutStudent([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
             if (id != request.Id)
@@ -96,8 +105,8 @@ namespace BlogPost.WebApi.Controllers
 
         // POST: api/Students
         [HttpPost]
-        [ProducesResponseType(typeof(Student), 201)]
-        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(Student), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<StudentResponse>> PostStudent([FromBody] CreateStudentRequest request)
         {
             var student = mapper.Map<Student>(request);
@@ -110,9 +119,9 @@ namespace BlogPost.WebApi.Controllers
 
         // DELETE: api/Students/5
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(void), 204)]
-        [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteStudent([FromRoute] int id)
         {
             var student = await context.Students.FindAsync(id);
@@ -125,6 +134,41 @@ namespace BlogPost.WebApi.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/students/5/courses/5/weighted-average
+        [HttpGet("{studentId}/courses/{courseId}/weighted-average")]
+        [ProducesResponseType(typeof(Student), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<double>> GetWeightedAverage(int studentId, int courseId)
+        {
+            try
+            {
+                var result = await studentService.GetWeightedAverageForCourseAsync(courseId, studentId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        // GET: api/students/missing-grades-linq
+        [HttpGet("missing-grades-linq")]
+        public async Task<ActionResult<IEnumerable<StudenCourseResponse>>> GetMissingGrades()
+        {
+            var missingGrades = await studentService.GetMissingCoursesForStudentsAsync();
+            var result = mapper.Map<IEnumerable<StudenCourseResponse>>(missingGrades);
+            return Ok(result);
+        }
+
+        // GET: api/students/missing-grades-linq
+        [HttpGet("missing-grades-sql")]
+        public async Task<ActionResult<IEnumerable<StudenCourseResponse>>> GetMissingGradesSQL()
+        {
+            var missingGrades = await studentRepository.GetMissingGradesAsync();
+            var result = mapper.Map<IEnumerable<StudenCourseResponse>>(missingGrades);
+            return Ok(result);
         }
 
         private bool StudentExists(int id)

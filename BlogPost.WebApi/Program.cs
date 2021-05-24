@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Extensions.Logging;
 namespace BlogPost.WebApi
 {
     public class Program
@@ -13,9 +13,13 @@ namespace BlogPost.WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging =>
+            {
+                logging.AddConsole();
+            })
+            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.ConfigureServices(services => services.AddAutofac());
                 webBuilder.UseStartup<Startup>();
             });
     }

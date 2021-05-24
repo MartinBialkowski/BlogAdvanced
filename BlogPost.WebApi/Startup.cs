@@ -8,13 +8,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using BlogPost.Services;
+using BlogPost.Infrastructure;
 
 namespace BlogPost.WebApi
 {
@@ -30,19 +31,19 @@ namespace BlogPost.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<BlogPostContext>(options =>
+            services.AddDbContextPool<BlogPostContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Blog Post - Advanced", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Blog Post - Advanced", Version = "v1" });
 
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. To use, put the following phrase: \"Bearer {token}\"",
                     Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey"
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
             });
 
@@ -55,6 +56,8 @@ namespace BlogPost.WebApi
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterType<StudentService>().AsImplementedInterfaces();
+            builder.RegisterType<StudentRepository>().AsImplementedInterfaces();
             builder.RegisterType<CreateStudentValidator>().As<IValidator<CreateStudentRequest>>();
             builder.RegisterType<UpdateStudentValidator>().As<IValidator<UpdateStudentRequest>>();
             builder.RegisterType<ValidatorFactory>().As<IValidatorFactory>().SingleInstance();
@@ -81,6 +84,7 @@ namespace BlogPost.WebApi
             });
 
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

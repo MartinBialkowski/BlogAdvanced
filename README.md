@@ -1,20 +1,35 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+WebAPI show project, using EF Core. Project uses Net Core 3.0 and is used as Spike to test new features and techniques.
+Project uses ORM without repository pattern as POC for ditching repository. Currently it uses service, but additionally it will use MediatR to as POC for simple CQRS.
+There are tests created for selected features as example for real projects. Tests are created only for first appearance, so I can check how to write test for something new.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Project uses Onion Architecture
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+# Project Description
+## BlogPost.Core
+Contains core of project, domain model, entities and ef migrations. Project is core of application, changes here shouldn't break applicaiton.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## BlogPost.Core.Interfaces
+Interfaces for core functionality. Project is core of application, changes here shouldn't break applicaiton.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## BlogPost.Services
+Implementation of core functionalities. It's used mostly in WebAPI to process data for users.
+
+## BlogPost.WebApi
+Public WebAPI for clients. Simple requests uses dbContext straight in controller, complex request are processed by services.
+
+## BlogPost.WebApi.Types
+WebAPI types, like DTO, mappings and validators.
+
+## BlogPost.Laboratory.Tests
+Project used to test new features. Project is deatached from project, but I keep it here to have spike stuff in one place, additionally as quick place where I can test confusing example from articles.
+
+# Technologies
+Net Core 3.0
+EF Core 3.0
+Autofac
+AutoMapper
+FluentValidation
+Xunit
+FluentAssertions
+Moq

@@ -8,10 +8,10 @@ namespace BlogPost.Core.Entities
         {
         }
 
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Assessment> Assessments { get; set; }
-        public DbSet<StudentCourse> StudentCourses { get; set; }
+        public DbSet<Course> Courses { get; set; } = null!;
+        public DbSet<Student> Students { get; set; } = null!;
+        public DbSet<Assessment> Assessments { get; set; } = null!;
+        public DbSet<StudentCourse> StudentCourses { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
